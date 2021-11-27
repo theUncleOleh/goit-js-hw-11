@@ -1,65 +1,97 @@
-import Notiflix from 'notiflix';
-import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import Notiflix from 'notiflix';
+import FetchImageApi from './fetchImageApi'
 
 
-const BASE_URL = 'https://pixabay.com/api/';
-const pixabayKey = '24437827-e20f686b1c65a4a2859f17630'
+
+
+
+
+
+
+
+
+
+
+
+
 const refs = {
     searchForm: document.querySelector('.search-form'),
     galleryList: document.querySelector('.gallery'),
+    container: document.querySelector('.container'),
+    loadMore: document.querySelector('.load-more'),
 }
+
+const fetchImageApi = new FetchImageApi();
 
 
 
 refs.searchForm.addEventListener('submit', handleFormSubmit);
+refs.loadMore.addEventListener('click', handleBtnClick)
 
 function handleFormSubmit(evt) {
    evt.preventDefault()
-    const searchData = evt.currentTarget.elements.searchQuery.value;
+   fetchImageApi.query = evt.currentTarget.elements.searchQuery.value;
+fetchImageApi.resetPage();
+    fetchImageApi.fetchImage().then(hits => {
+      if (hits.length < 1) {
+        return  Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+            }
+            
+          return renderImageList (hits);
+    });
    
-   getImagine(searchData).then(images => renderImageList(images)).catch(error => console.log("Error"));
+    
+        
+          
+        } 
 
-}
-
-
-
-function getImagine (searchData)  {
-   
-    return axios.get(`${BASE_URL}?key=${pixabayKey}&q=${searchData}&image_type=photo&orientation=horizontal&safesearch=true`)
     
 
-      }
+
+
+
+
+
+
+function renderImageList (hits) {
   
-
-
-function renderImageList (images) {
-    const markup = images.data.hits.map((image) => {
-        return  `<div class="photo-card">
-         <a class="photo-link" href="${image.largeImageURL}"><img src="${image.webformatURL}" width="640" height="427"  alt="${image.tags}" loading="lazy" /></a>
+    const markup = hits.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+        return `<a class="gallery-item" href="${largeImageURL}"><div class="photo-card"> 
+        <img class="photo-image" src="${webformatURL}"  alt="${tags}" loading="lazy" />
+         
          <div class="info">
+         
            <p class="info-item">
-             <b>Likes: ${image.likes}</b>
+             <b>Likes: ${likes}</b>
            </p>
            <p class="info-item">
-             <b>Views: ${image.views}</b>
+             <b>Views: ${views}</b>
            </p>
            <p class="info-item">
-             <b>Comments: ${image.comments}</b>
+             <b>Comment: ${comments}</b>
            </p>
            <p class="info-item">
-             <b>Downloads: ${image.downloads}</b>
+             <b>Downloads: ${downloads}</b>
            </p>
          </div>
-       </div>`;
+       </div></a>`;
            }).join('');
 
 refs.galleryList.insertAdjacentHTML('beforeend',markup );
+
+let lightbox = new SimpleLightbox('.gallery a');
 }
 
-const lightbox = new SimpleLightbox('.gallery a', { /* options */ });
-console.log(lightbox);
+function handleBtnClick(evt) {
+  fetchImageApi.fetchImage().then(renderImageList )
+}
+
+
+
+
+
 
 
 
