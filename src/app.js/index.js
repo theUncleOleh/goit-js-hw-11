@@ -32,9 +32,12 @@ refs.loadMore.addEventListener('click', handleBtnClick)
 
 function handleFormSubmit(evt) {
    evt.preventDefault()
+   
    fetchImageApi.query = evt.currentTarget.elements.searchQuery.value;
-fetchImageApi.resetPage();
-    fetchImageApi.fetchImage().then(hits => {
+   
+   fetchImageApi.resetPage();
+    
+   fetchImageApi.fetchImage().then(hits => {
       if (hits.length < 1) {
         return  Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             }
