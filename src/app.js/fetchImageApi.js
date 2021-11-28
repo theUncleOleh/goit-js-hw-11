@@ -18,9 +18,13 @@ export default class FetchImageApi {
    return getImagine()
    
    .then(images => {
-       console.log(images.data.hits)
-       this.incrementPage()
-       return images.data.hits
+       
+      
+    //    console.log(images.data.totalHits);
+       this.incrementPage();
+    //    console.log(images.data);
+       return images.data
+       
    })
   .catch(error => console.log("Error"))  
     }
@@ -37,13 +41,4 @@ export default class FetchImageApi {
     resetPage() {
         this.page = 1;
     }
-
-    
-    get query(){
-        return this.searchQuery
-    };
-    
-    set query(newQuery){
-this.searchQuery = newQuery
-    };
 }

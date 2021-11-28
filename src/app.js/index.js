@@ -28,21 +28,30 @@ const fetchImageApi = new FetchImageApi();
 
 
 refs.searchForm.addEventListener('submit', handleFormSubmit);
-refs.loadMore.addEventListener('click', handleBtnClick)
+refs.loadMore.addEventListener('click', handleBtnClick);
+refs.loadMore.style.display = 'none';
+
+let totalHits = 0;
 
 function handleFormSubmit(evt) {
-   evt.preventDefault()
+   evt.preventDefault();
+   clearGalleryList();
+   refs.loadMore.style.display = 'none';
    
-   fetchImageApi.query = evt.currentTarget.elements.searchQuery.value;
-   
+   fetchImageApi.searchQuery = evt.currentTarget.elements.searchQuery.value;
    fetchImageApi.resetPage();
-    
-   fetchImageApi.fetchImage().then(hits => {
-      if (hits.length < 1) {
+  
+   fetchImageApi.fetchImage().then(data=> { 
+    totalHits = 100;
+    console.log(totalHits)
+     
+     
+      if (data.hits.length < 1) {
         return  Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-            }
-            
-          return renderImageList (hits);
+            } 
+            Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`)
+            refs.loadMore.style.display = 'block'; 
+          return renderImageList (data);
     });
    
     
@@ -58,9 +67,9 @@ function handleFormSubmit(evt) {
 
 
 
-function renderImageList (hits) {
+function renderImageList (data) {
   
-    const markup = hits.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+    const markup = data.hits.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
         return `<a class="gallery-item" href="${largeImageURL}"><div class="photo-card"> 
         <img class="photo-image" src="${webformatURL}"  alt="${tags}" loading="lazy" />
          
@@ -87,8 +96,20 @@ refs.galleryList.insertAdjacentHTML('beforeend',markup );
 let lightbox = new SimpleLightbox('.gallery a');
 }
 
-function handleBtnClick(evt) {
-  fetchImageApi.fetchImage().then(renderImageList )
+function handleBtnClick(data) {
+  
+   totalHits = 100;
+   if(data > totalHits){
+    return Notiflix.Notify.warning("aaaaaaaaaaaaaaaaaa");
+    
+      }
+ return fetchImageApi.fetchImage().then(renderImageList);
+
+ 
+  }
+
+function clearGalleryList (){
+refs.galleryList.innerHTML = "";
 }
 
 
