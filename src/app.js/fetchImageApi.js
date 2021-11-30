@@ -22,7 +22,8 @@ export default class FetchImageApi {
       
     //    console.log(images.data.totalHits);
        this.incrementPage();
-    //    console.log(images.data);
+       console.log(images.data);
+      
        return images.data
        
    })

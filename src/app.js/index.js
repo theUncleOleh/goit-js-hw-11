@@ -24,52 +24,53 @@ const refs = {
 }
 
 const fetchImageApi = new FetchImageApi();
-
+console.log(fetchImageApi);
 
 
 refs.searchForm.addEventListener('submit', handleFormSubmit);
 refs.loadMore.addEventListener('click', handleBtnClick);
 refs.loadMore.style.display = 'none';
 
-let totalHits = 0;
+
 
 function handleFormSubmit(evt) {
    evt.preventDefault();
+
+
+
    clearGalleryList();
    refs.loadMore.style.display = 'none';
    
    fetchImageApi.searchQuery = evt.currentTarget.elements.searchQuery.value;
-   fetchImageApi.resetPage();
-  
-   fetchImageApi.fetchImage().then(data=> { 
-    totalHits = 100;
-    console.log(totalHits)
-     
-     
-      if (data.hits.length < 1) {
-        return  Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-            } 
-            Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`)
-            refs.loadMore.style.display = 'block'; 
-          return renderImageList (data);
-    });
    
-    
-        
+   
+   fetchImageApi.resetPage();
+   fetchImageApi.fetchImage().then(data => {
+     console.log(data.hits)
+     const totalHits = data.totalHits; 
+     console.log(totalHits);
+
+    if (data.hits.length < 1) {
+      return  Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+          } else if (data.hits.length > 1 && data.hits.length < totalHits) {
+            Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
+            refs.loadMore.style.display = 'block'; 
+            return renderImageList (data);
+          } 
+            
           
-        } 
+          
 
-    
-
-
-
+        
+  });
 
 
 
+   } 
 
-function renderImageList (data) {
+    function renderImageList (data) {
   
-    const markup = data.hits.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+      const markup = data.hits.map(({webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
         return `<a class="gallery-item" href="${largeImageURL}"><div class="photo-card"> 
         <img class="photo-image" src="${webformatURL}"  alt="${tags}" loading="lazy" />
          
@@ -97,20 +98,22 @@ let lightbox = new SimpleLightbox('.gallery a');
 }
 
 function handleBtnClick(data) {
-  
-   totalHits = 100;
-   if(data > totalHits){
-    return Notiflix.Notify.warning("aaaaaaaaaaaaaaaaaa");
-    
-      }
- return fetchImageApi.fetchImage().then(renderImageList);
 
- 
+
+return fetchImageApi.fetchImage().then(renderImageList);
+
+
   }
 
 function clearGalleryList (){
 refs.galleryList.innerHTML = "";
 }
+
+// function totalImageHits (data) {
+  
+//     return Notiflix.Notify.warning('aaaaaaaaa');
+  
+//   }
 
 
 
