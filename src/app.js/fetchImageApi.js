@@ -27,7 +27,7 @@ export default class FetchImageApi {
        return images.data
        
    })
-  .catch(error => console.log("Error"))  
+  .catch(error => console.log("Error") )
     }
     
        

@@ -56,7 +56,11 @@ function handleFormSubmit(evt) {
             Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`)
             refs.loadMore.style.display = 'block'; 
             return renderImageList (data);
+          }else if (data.hits.length < 40){
+            refs.loadMore.style.display = 'none'; 
+           return  Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.")
           } 
+
             
           
           
